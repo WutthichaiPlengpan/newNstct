@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+ถ้าไฟล์คุณเป็น next.config.js หรือ .mjs:
+
+JavaScript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // เพิ่มบรรทัดนี้เข้าไป เพื่ออนุญาตให้อุปกรณ์เครื่องนี้เข้าเว็บได้
+  allowedDevOrigins: ['192.168.47.12'],
+};
+
+export default nextConfig;
