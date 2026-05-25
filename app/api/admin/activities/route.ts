@@ -1,0 +1,101 @@
+import { NextResponse } from "next/server";
+import { connectDB } from "@/app/lib/db";
+import sql from "mssql";
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get("category");
+
+    const pool = await connectDB();
+    let query = `
+            SELECT a.*, 
+                   (SELECT COUNT(*) FROM tb_hr_ActivityImages i WHERE i.ActivityID = a.ActivityID) as PhotoCount
+            FROM tb_hr_Activities a 
+            WHERE a.IsActive = 1
+        `;
+    if (category) query += ` AND a.Category = @Category`;
+    query += ` ORDER BY a.ActivityDate DESC`;
+
+    const requestSql = pool.request();
+    if (category) requestSql.input("Category", sql.NVarChar, category);
+
+    const result = await requestSql.query(query);
+    return NextResponse.json({ success: true, data: result.recordset });
+  } catch (error) {
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const { title, category, date, description } = await request.json();
+    const pool = await connectDB();
+    await pool
+      .request()
+      .input("Title", sql.NVarChar, title)
+      .input("Category", sql.NVarChar, category)
+      .input("ActivityDate", sql.Date, date)
+      .input("Description", sql.NVarChar, description || "")
+      .query(
+        `INSERT INTO tb_hr_Activities (Title, Category, ActivityDate, Description) VALUES (@Title, @Category, @ActivityDate, @Description)`,
+      );
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const pool = await connectDB();
+
+    // 💡 แยกว่าเป็นการทำงานแบบ "ตั้งเป็นรูปปก" หรือ "อัปเดตข้อมูลกิจกรรม"
+    if (body.action === "setCover") {
+      await pool
+        .request()
+        .input("ActivityID", sql.Int, body.id)
+        .input("CoverImage", sql.NVarChar, body.coverImage)
+        .query(
+          `UPDATE tb_hr_Activities SET CoverImage = @CoverImage WHERE ActivityID = @ActivityID`,
+        );
+      return NextResponse.json({
+        success: true,
+        message: "ตั้งเป็นรูปปกสำเร็จ",
+      });
+    }
+
+    // กรณีอัปเดตข้อมูลกิจกรรม
+    await pool
+      .request()
+      .input("ActivityID", sql.Int, body.id)
+      .input("Title", sql.NVarChar, body.title)
+      .input("Category", sql.NVarChar, body.category)
+      .input("ActivityDate", sql.Date, body.date)
+      .input("Description", sql.NVarChar, body.description || "").query(`
+                UPDATE tb_hr_Activities 
+                SET Title = @Title, Category = @Category, ActivityDate = @ActivityDate, Description = @Description
+                WHERE ActivityID = @ActivityID
+            `);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { id } = await request.json();
+    const pool = await connectDB();
+    await pool
+      .request()
+      .input("ActivityID", sql.Int, id)
+      .query(
+        `UPDATE tb_hr_Activities SET IsActive = 0 WHERE ActivityID = @ActivityID`,
+      );
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
+}
