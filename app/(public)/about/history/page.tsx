@@ -255,28 +255,49 @@ export default function HistoryPage() {
         </section>
 
         {/* ================= 4. Executive Management (ผังองค์กรแบบใหม่) ================= */}
-        <section className="bg-white rounded-3xl p-6 md:p-12 shadow-sm border border-gray-100 overflow-hidden">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-blue-900 mb-12">
+        <section className="bg-white rounded-3xl p-4 md:p-12 shadow-sm border border-gray-100 overflow-hidden">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-blue-900 mb-6 md:mb-12">
             {t("history.exec_title")}
           </h2>
 
-          <div className="w-full pb-12">
-            <div className="w-full flex flex-col items-center">
-              {/* Level 1: P (ดึงข้อมูลจากไฟล์แปลภาษา) */}
+          {/* 💡 1. เพิ่มข้อความบอกใบ้สำหรับมือถือ (จะซ่อนอัตโนมัติบนจอใหญ่) */}
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-6 md:hidden animate-pulse">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+              />
+            </svg>
+            <span>เลื่อนซ้าย-ขวาเพื่อดูโครงสร้าง</span>
+          </div>
+
+          {/* 💡 2. เพิ่ม overflow-x-auto เพื่อให้เลื่อนแนวนอนได้ และซ่อน Scrollbar แนวตั้ง */}
+          <div className="w-full pb-12 overflow-x-auto scrollbar-hide">
+            {/* 💡 3. บังคับความกว้างขั้นต่ำ (min-w-[1000px]) เพื่อรักษาโครงสร้างไม่ให้ถูกบีบเละบนจอมือถือ */}
+            <div className="min-w-[1000px] w-full flex flex-col items-center mx-auto px-4">
+              {/* Level 1: P */}
               <OrgNode
                 abbr="P"
                 name={t("history.exec_1_name")}
                 pos={t("history.exec_1_pos")}
-                imageSrc="/uploads/managers/Yamazaki.jpg"
+                imageSrc="/managers/Yamazaki.jpg"
               />
               <VLine />
 
-              {/* Level 2: VP (ดึงข้อมูลจากไฟล์แปลภาษา) */}
+              {/* Level 2: VP */}
               <OrgNode
                 abbr="VP"
                 name={t("history.exec_2_name")}
                 pos={t("history.exec_2_pos")}
-                imageSrc="/uploads/managers/Goh.jpg"
+                imageSrc="/managers/Goh.jpg"
               />
               <VLine />
 
@@ -300,15 +321,14 @@ export default function HistoryPage() {
                         <OrgNode
                           name={t("history.exec_3_name")}
                           pos={t("history.exec_3_pos")}
-                          imageSrc="/uploads/managers/Inouet.jpg"
+                          imageSrc="/managers/Inouet.jpg"
                         />
                       </div>
                       <div className="flex flex-col items-center">
-                        {/* บุคคลที่ไม่ได้อยู่ในไฟล์แปลภาษา จะถูกบังคับให้เป็นภาษาอังกฤษเสมอตามที่คุณต้องการ */}
                         <OrgNode
-                          name="Mr. SAKDA WONGKAEW"
+                          name="Mr.SAKDA WONGKAEW"
                           pos="Production Manager"
-                          imageSrc="/uploads/managers/Prapaporn.jpg"
+                          imageSrc="/managers/SAKDA.png"
                         />
                       </div>
                     </div>
@@ -322,24 +342,23 @@ export default function HistoryPage() {
                     abbr="AGM"
                     name="Ms. Dara Hussain"
                     pos="Assit General Manager"
-                    imageSrc="/uploads/managers/Prapaporn.jpg"
+                    imageSrc="/managers/Dara.jpg"
                   />
                   <VLine />
                   <OrgNode
                     name="Ms. Pila Khwayota"
                     pos="Account Manager"
-                    imageSrc="/uploads/managers/Prapaporn.jpg"
+                    imageSrc="/managers/Pila.jpg"
                   />
                 </div>
 
                 {/* Branch 3: GM Group */}
                 <div className="w-1/3 flex flex-col items-center relative">
-                  {/* GM (ดึงข้อมูลจากไฟล์แปลภาษา) */}
                   <OrgNode
                     abbr="GM"
                     name={t("history.exec_5_name")}
                     pos={t("history.exec_5_pos")}
-                    imageSrc="/uploads/managers/Prapaporn.jpg"
+                    imageSrc="/managers/Prapaporn.jpg"
                   />
                   <VLine h="h-60" />
 
@@ -354,21 +373,21 @@ export default function HistoryPage() {
                         <OrgNode
                           name={t("history.exec_4_name")}
                           pos={t("history.exec_4_pos")}
-                          imageSrc="/uploads/managers/Yoshisue.jpg"
+                          imageSrc="/managers/Yoshisue.jpg"
                         />
                       </div>
                       <div className="flex flex-col items-center">
                         <OrgNode
                           name="Ms. SUPREEYA Phungbarameeupatham"
                           pos="Marketing Manager"
-                          imageSrc="/uploads/managers/Prapaporn.jpg"
+                          imageSrc="/managers/SUPREEYA.jpg"
                         />
                       </div>
                       <div className="flex flex-col items-center">
                         <OrgNode
                           name="Mr. BAROM SANGNAKRIT"
                           pos="System Control Manager"
-                          imageSrc="/uploads/managers/Prapaporn.jpg"
+                          imageSrc="/managers/BAROM.jpg"
                         />
                       </div>
                     </div>

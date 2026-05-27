@@ -60,9 +60,9 @@ export default function Header() {
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchQuery.trim() !== "") {
-      // พาไปหน้า search พร้อมส่งคำค้นหาไปใน URL
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-      setIsMobileMenuOpen(false); // ปิดเมนูมือถือ (ถ้าเปิดอยู่)
+      setSearchQuery("");
+      setIsMobileMenuOpen(false); 
     }
   };
 

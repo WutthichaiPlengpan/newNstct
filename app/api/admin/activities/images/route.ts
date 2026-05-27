@@ -11,7 +11,7 @@ export async function GET(request: Request) {
         const activityId = searchParams.get("activityId");
         const pool = await connectDB();
         const result = await pool.request()
-            .input('ActivityID', sql.Int, activityId)
+            .input('ActivityID', activityId)
             .query(`SELECT * FROM tb_hr_ActivityImages WHERE ActivityID = @ActivityID ORDER BY UploadedAt DESC`);
         return NextResponse.json({ success: true, data: result.recordset });
     } catch (error) {
@@ -46,14 +46,14 @@ export async function POST(request: Request) {
             const dbUrl = `/uploads/activities/${category}/${activityId}/${finalName}`;
 
             await pool.request()
-                .input('ActivityID', sql.Int, activityId)
-                .input('ImageUrl', sql.NVarChar, dbUrl)
+                .input('ActivityID',  activityId)
+                .input('ImageUrl',  dbUrl)
                 .query(`INSERT INTO tb_hr_ActivityImages (ActivityID, ImageUrl) VALUES (@ActivityID, @ImageUrl)`);
                 
             // เซ็ตรูปแรกให้เป็นรูปปก (Cover) ถ้ายังไม่มี
             await pool.request()
-                .input('ActivityID', sql.Int, activityId)
-                .input('CoverImage', sql.NVarChar, dbUrl)
+                .input('ActivityID',  activityId)
+                .input('CoverImage',  dbUrl)
                 .query(`UPDATE tb_hr_Activities SET CoverImage = @CoverImage WHERE ActivityID = @ActivityID AND CoverImage IS NULL`);
         }
 
@@ -70,7 +70,7 @@ export async function DELETE(request: Request) {
         const pool = await connectDB();
         
         // ลบออกจากฐานข้อมูล
-        await pool.request().input('ImageID', sql.Int, imageId).query(`DELETE FROM tb_hr_ActivityImages WHERE ImageID = @ImageID`);
+        await pool.request().input('ImageID', imageId).query(`DELETE FROM tb_hr_ActivityImages WHERE ImageID = @ImageID`);
         
         // ลบไฟล์จริงออกจากเซิร์ฟเวอร์
         const filePath = path.join(process.cwd(), "public", imageUrl);

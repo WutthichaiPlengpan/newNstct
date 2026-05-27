@@ -46,7 +46,9 @@ export default function SearchResultsPage() {
       case "activity":
         return `/activity/company`; // หรือไปหน้าอัลบั้ม
       case "job":
-        return `/job`; // หรือไปหน้า /job/${id}
+        return `/job`;
+      case "policy":
+        return `/about/quality-policy/${id}`;
       default:
         return `/`;
     }
@@ -61,6 +63,8 @@ export default function SearchResultsPage() {
         return "กิจกรรม";
       case "job":
         return "รับสมัครงาน";
+      case "policy":
+        return "นโยบาย";
       default:
         return "ข้อมูลทั่วไป";
     }

@@ -70,7 +70,7 @@ export default function AdminNewsPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (newsId: number) => {
     // 💡 เปลี่ยนเป็นระบบกล่องยืนยันการลบ (Confirm Dialog) ของ SweetAlert2
     Swal.fire({
       title: "คุณแน่ใจหรือไม่?",
@@ -85,8 +85,11 @@ export default function AdminNewsPage() {
       if (result.isConfirmed) {
         try {
           const res = await fetch("/api/admin/news", {
-            method: "DELETE",
-            body: JSON.stringify({ id }),
+           method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json', // 👈 ขาดบรรทัดนี้ไม่ได้
+            },
+            body: JSON.stringify({ id: newsId }),
           });
           const data = await res.json();
 

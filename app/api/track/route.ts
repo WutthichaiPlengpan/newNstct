@@ -3,22 +3,28 @@ import { connectDB } from "@/app/lib/db";
 import sql from "mssql";
 
 export async function POST(request: Request) {
-    try {
-        const { actionType, details } = await request.json();
-        
-        // ดึง IP ของ User (ถ้ามี)
-        const ip = request.headers.get("x-forwarded-for") || request.headers.get("remote-addr") || "Unknown";
+  try {
+    const { actionType, details } = await request.json();
 
-        const pool = await connectDB();
-        await pool.request()
-            .input('ActionType', sql.NVarChar, actionType)
-            .input('Details', sql.NVarChar, details)
-            .input('IPAddress', sql.NVarChar, ip)
-            .query(`INSERT INTO tb_web_nstct_Logs (ActionType, Details, IPAddress) VALUES (@ActionType, @Details, @IPAddress)`);
+    // ดึง IP ของ User (ถ้ามี)
+    const ip =
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("remote-addr") ||
+      "Unknown";
 
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error("Tracking Error:", error);
-        return NextResponse.json({ success: false }, { status: 500 });
-    }
+    const pool = await connectDB();
+    await pool
+      .request()
+      .input("ActionType", actionType)
+      .input("Details", details)
+      .input("IPAddress", ip)
+      .query(
+        `INSERT INTO tb_web_nstct_Logs (ActionType, Details, IPAddress) VALUES (@ActionType, @Details, @IPAddress)`,
+      );
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Tracking Error:", error);
+    return NextResponse.json({ success: false }, { status: 500 });
+  }
 }

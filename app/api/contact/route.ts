@@ -1,33 +1,73 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const LIMIT_REQUESTS = 5; // อนุญาตให้ยิงได้สูงสุด 5 ครั้ง
+const WINDOW_TIME = 60 * 1000; // ในช่วงเวลา 1 นาที
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const clientData = rateLimitMap.get(ip);
+
+  if (!clientData) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + WINDOW_TIME });
+    return false;
+  }
+
+  if (now > clientData.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + WINDOW_TIME });
+    return false;
+  }
+
+  clientData.count++;
+
+  if (clientData.count > LIMIT_REQUESTS) {
+    return true;
+  }
+
+  return false;
+}
+
 export async function POST(request: Request) {
-    try {
-        const { name, email, subject, message } = await request.json();
+  try {
+    const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
 
-        // ตรวจสอบว่ากรอกข้อมูลครบหรือไม่
-        if (!name || !email || !subject || !message) {
-            return NextResponse.json({ success: false, message: "กรุณากรอกข้อมูลให้ครบถ้วน" }, { status: 400 });
-        }
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "คุณส่งคำขอถี่เกินไป กรุณารออีก 1 นาทีก่อนลองใหม่อีกครั้ง",
+        },
+        { status: 429 },
+      );
+    }
 
-        // 💡 ตั้งค่าการเชื่อมต่อ Email (ใช้อีเมลเดียวกับระบบก่อนหน้านี้)
-        const transporter = nodemailer.createTransport({
-            host: "smtp.office365.com",
-            port: 587,
-            secure: false, // ใช้ TLS
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
+    // 💡 เราอ่านข้อมูล (body) ตรงนี้ครั้งเดียวเสร็จเรียบร้อยแล้ว
+    const { name, email, subject, message } = await request.json();
 
-        // 💡 จัดรูปแบบอีเมลส่งหา Admin
-        const mailOptions = {
-            from: `"NSTCT Contact Form" <${process.env.EMAIL_USER}>`,
-            to: "admin@nstct.co.th", // 👈 ส่งเข้าอีเมลแอดมิน
-            replyTo: email, // 💡 ทริค: กำหนด Reply-To ให้แอดมินกด "ตอบกลับ" แล้วเด้งเข้าอีเมลของลูกค้าทันที
-            subject: `[Contact Us] ${subject}`,
-            html: `
+    if (!name || !email || !subject || !message) {
+      return NextResponse.json(
+        { success: false, message: "กรุณากรอกข้อมูลให้ครบถ้วน" },
+        { status: 400 },
+      );
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.office365.com",
+      port: 587,
+      secure: false, // ใช้ TLS
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: `"NSTCT Contact Form" <${process.env.EMAIL_USER}>`,
+      to: "admin@nstct.co.th",
+      replyTo: email,
+      subject: `[Contact Us] ${subject}`,
+      html: `
                 <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
                     <h2 style="color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 12px; margin-top: 0;">
                         📬 มีข้อความใหม่จากหน้า "ติดต่อเรา"
@@ -56,14 +96,16 @@ export async function POST(request: Request) {
                     </p>
                 </div>
             `,
-        };
+    };
 
-        await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
-        return NextResponse.json({ success: true, message: "ส่งข้อความสำเร็จ" });
-
-    } catch (error) {
-        console.error("Contact Form Error:", error);
-        return NextResponse.json({ success: false, message: "ระบบส่งอีเมลขัดข้องชั่วคราว" }, { status: 500 });
-    }
+    return NextResponse.json({ success: true, message: "ส่งข้อความสำเร็จ" });
+  } catch (error) {
+    console.error("Contact API Error:", error);
+    return NextResponse.json(
+      { success: false, error: "เกิดข้อผิดพลาด" },
+      { status: 500 },
+    );
+  }
 }

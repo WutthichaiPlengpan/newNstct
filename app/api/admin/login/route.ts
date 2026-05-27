@@ -3,6 +3,7 @@ import { connectDB } from "@/app/lib/db";
 import sql from "mssql";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { SignJWT } from "jose";
 
 // 💡 1. Zod Schema: ด่านหน้าสกัดกั้น Payload และป้องกัน ReDoS
 const adminLoginSchema = z.object({
@@ -33,6 +34,19 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error(
+        "CRITICAL ERROR: Missing JWT_SECRET in environment variables.",
+      );
+      return NextResponse.json(
+        {
+          success: false,
+          message: "เกิดข้อผิดพลาดในการตั้งค่าเซิร์ฟเวอร์ (Missing Secret)",
+        },
+        { status: 500 },
+      );
+    }
+
     const { username, password } = parseResult.data;
     const pool = await connectDB();
 
@@ -46,45 +60,50 @@ export async function POST(request: Request) {
             FROM tb_User us 
             LEFT JOIN tb_hr_employee em ON us.user_id = em.emp_id 
             WHERE em.emp_status = 1 
-              AND em.emp_section IN ('admin','System') 
+              AND em.emp_section IN ('admin','System','account') 
               AND us.user_status <> 0 
               AND us.user_name = @username
         `;
 
     const result = await pool
       .request()
-      .input("username", sql.NVarChar, username)
+      .input("username", username)
       .query(query);
 
     if (result.recordset.length > 0) {
       const dbUser = result.recordset[0];
-
-      // เปรียบเทียบรหัสผ่าน
       const isPasswordMatch = await bcrypt.compare(
         password,
         dbUser.user_passwordh,
       );
 
       if (isPasswordMatch) {
-        const user = {
+        const payload = {
           FullName: `${dbUser.emp_name} ${dbUser.emp_lname}`,
           Role: dbUser.emp_section,
         };
 
-        const response = NextResponse.json({ success: true, user });
+        // 🛡️ ป้องกัน Cookie Tampering ด้วยการทำ JWT
+        const secretKey = new TextEncoder().encode(process.env.JWT_SECRET); // อย่าลืมใส่ใน .env
+        const token = await new SignJWT(payload)
+          .setProtectedHeader({ alg: "HS256" })
+          .setIssuedAt()
+          .setExpirationTime("1d") // หมดอายุใน 1 วัน
+          .sign(secretKey);
 
-        // --- Security Check 3: Secure Cookie Settings ---
-        response.cookies.set(
-          "nstct_admin_token",
-          encodeURIComponent(JSON.stringify(user)),
-          {
-            httpOnly: false, // ⚠️ แนะนำ: ถ้าหน้าเว็บ (Client) ไม่ได้ใช้คำสั่งอ่านคุกกี้นี้ ควรเปลี่ยนเป็น true เพื่อกัน XSS
-            secure: process.env.NODE_ENV === "production", // บังคับใช้ HTTPS บน Server จริง
-            sameSite: "lax", // 🛡️ ป้องกันการโจมตีข้ามไซต์ (CSRF)
-            maxAge: 60 * 60 * 24, // 1 วัน
-            path: "/",
-          },
-        );
+        const response = NextResponse.json({
+          success: true,
+          message: "เข้าสู่ระบบสำเร็จ",
+        });
+
+        // 🛡️ ป้องกัน XSS ด้วย httpOnly: true เสมอ
+        response.cookies.set("nstct_admin_token", token, {
+          httpOnly: true, // เปลี่ยนเป็น true เด็ดขาด
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24,
+          path: "/",
+        });
 
         return response;
       }

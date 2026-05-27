@@ -22,8 +22,8 @@ export async function POST(request: Request) {
         `;
 
         const authResult = await pool.request()
-            .input("supplierCode", sql.VarChar, supplierCode)
-            .input("taxId", sql.VarChar, taxId)
+            .input("supplierCode",  supplierCode)
+            .input("taxId",  taxId)
             .query(authQuery);
 
         // ถ้าไม่เจอข้อมูล แปลว่ารหัสผิด
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
         `;
 
         const invResult = await pool.request()
-            .input("supplierCode", sql.VarChar, supplierCode)
+            .input("supplierCode",  supplierCode)
             .query(invQuery);
 
         // ==========================================

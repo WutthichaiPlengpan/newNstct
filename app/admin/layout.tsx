@@ -22,25 +22,23 @@ export default function AdminLayout({
   useEffect(() => {
     if (isLoginPage) {
       setIsChecking(false);
-
       return;
     }
 
-    const getAdminData = () => {
+    // 🛡️ ปรับปรุง: ดึงข้อมูลผู้ใช้งานผ่าน API ปลอดภัยกว่าการอ่าน Cookie ตรงๆ
+    const getAdminData = async () => {
       try {
-        const match = document.cookie.match(
-          new RegExp("(^| )nstct_admin_token=([^;]+)"),
-        );
-        if (match) {
-          const decodedData = decodeURIComponent(match[2]);
-          setAdmin(JSON.parse(decodedData));
+        const res = await fetch("/api/auth/me");
+        const data = await res.json();
+
+        if (data.success) {
+          setAdmin(data.user);
         } else {
+          // ถ้า Token หมดอายุ หรือไม่ถูกต้อง ให้เด้งไปหน้า Login
           router.push("/admin/login");
         }
       } catch (error) {
-        console.error("ถอดรหัส Cookie ไม่สำเร็จ:", error);
-        document.cookie =
-          "nstct_admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+        console.error("ตรวจสอบสิทธิ์ไม่สำเร็จ:", error);
         router.push("/admin/login");
       } finally {
         setIsChecking(false);
@@ -50,16 +48,26 @@ export default function AdminLayout({
     getAdminData();
   }, [router, isLoginPage]);
 
-  const handleLogout = () => {
-    document.cookie =
-      "nstct_admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-    router.push("/admin/login");
+  // 🛡️ ปรับปรุง: ส่งคำขอไปให้ Server เคลียร์ httpOnly Cookie
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+      if (res.ok) {
+        router.push("/admin/login");
+      }
+    } catch (error) {
+      console.error("Logout Error:", error);
+      // เด้งไปหน้าล็อกอินเผื่อไว้ก่อนเพื่อความปลอดภัย
+      router.push("/admin/login");
+    }
   };
 
   if (isChecking) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        Loading...
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center font-medium text-gray-500">
+        กำลังตรวจสอบสิทธิ์...
       </div>
     );
   }
@@ -68,12 +76,10 @@ export default function AdminLayout({
     return <>{children}</>;
   }
 
-  // 💡 1. เช็คสิทธิ์ (แปลงข้อความเป็นตัวเล็กทั้งหมดก่อน เพื่อป้องกันปัญหาพิมพ์ตัวพิมพ์เล็ก/ใหญ่ไม่ตรงกัน)
   const userRole = admin?.Role?.toLowerCase() || "";
   const isAccountRole = userRole === "account";
 
   return (
-    // 💡 2. แก้ไข Layout Shift: บังคับความสูงเท่าหน้าจอ (h-screen) และซ่อน Scrollbar นอกสุด (overflow-hidden)
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       <aside className="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col">
         <div className="p-6 border-b border-gray-100">
@@ -85,7 +91,6 @@ export default function AdminLayout({
             Main Menu
           </p>
 
-          {/* 💡 3. ซ่อนเมนู Dashboard และ Applications ถ้าเป็นแผนก Account */}
           {!isAccountRole && (
             <>
               <Link
@@ -93,6 +98,12 @@ export default function AdminLayout({
                 className={`block px-4 py-2 rounded-lg transition-colors font-medium ${pathname === "/admin/dashboard" ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"}`}
               >
                 Dashboard
+              </Link>
+              <Link
+                href="/admin/policies"
+                className={`block px-4 py-2 rounded-lg transition-colors font-medium ${pathname === "/admin/policies" ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"}`}
+              >
+                Policies
               </Link>
               <Link
                 href="/admin/news"
@@ -112,7 +123,7 @@ export default function AdminLayout({
               >
                 Jobs
               </Link>
-               <Link
+              <Link
                 href="/admin/activities"
                 className={`block px-4 py-2 rounded-lg transition-colors font-medium ${pathname === "/admin/activities" ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"}`}
               >
@@ -139,7 +150,6 @@ export default function AdminLayout({
         </div>
       </aside>
 
-      {/* 💡 4. บังคับไม่ให้โครงสร้างขวาขยับ (overflow-hidden) */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 shrink-0">
           <h1 className="text-gray-500 font-medium">Back-office System</h1>
@@ -157,7 +167,6 @@ export default function AdminLayout({
           </div>
         </header>
 
-        {/* 💡 5. ให้เฉพาะส่วนเนื้อหาตรงกลางเท่านั้นที่มี Scrollbar (overflow-y-auto) */}
         <main className="p-8 flex-1 overflow-y-auto bg-gray-50">
           {children}
         </main>

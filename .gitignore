@@ -4,6 +4,7 @@
 /node_modules
 
 /uploads
+/private_uploads
 
 /.pnp
 .pnp.*

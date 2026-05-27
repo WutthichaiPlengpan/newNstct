@@ -22,10 +22,10 @@ export async function POST(request: Request) {
         const pool = await connectDB();
         
         await pool.request()
-            .input('Title', sql.NVarChar, title)
-            .input('Department', sql.NVarChar, department)
-            .input('Location', sql.NVarChar, location)
-            .input('Requirements', sql.NVarChar, requirements)
+            .input('Title',  title)
+            .input('Department',  department)
+            .input('Location',  location)
+            .input('Requirements', requirements)
             .query(`
                 INSERT INTO tb_hr_Jobs (Title, Department, Location, Requirements)
                 VALUES (@Title, @Department, @Location, @Requirements)
@@ -43,11 +43,11 @@ export async function PUT(request: Request) {
         const pool = await connectDB();
         
         await pool.request()
-            .input('JobID', sql.Int, id)
-            .input('Title', sql.NVarChar, title)
-            .input('Department', sql.NVarChar, department)
-            .input('Location', sql.NVarChar, location)
-            .input('Requirements', sql.NVarChar, requirements)
+            .input('JobID',  id)
+            .input('Title',  title)
+            .input('Department', department)
+            .input('Location',  location)
+            .input('Requirements', requirements)
             .query(`
                 UPDATE tb_hr_jobs 
                 SET Title = @Title, 
@@ -70,7 +70,7 @@ export async function DELETE(request: Request) {
         
         // Soft Delete (เปลี่ยนสถานะเป็น 0 แทนการลบทิ้งถาวร)
         await pool.request()
-            .input('JobID', sql.Int, id)
+            .input('JobID',  id)
             .query(`UPDATE tb_hr_jobs SET IsActive = 0 WHERE JobID = @JobID`);
             
         return NextResponse.json({ success: true });

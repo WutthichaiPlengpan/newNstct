@@ -9,7 +9,7 @@
     "home": "HOME",
     "about": "ABOUT US",
     "history": "Company History",
-    "quality": "Quality & Environment Policy",
+    "quality": "Company Policy",
     "product": "PRODUCT / SERVICE",
     "machine": "MACHINE",
     "online_service": "ONLINE SERVICE",
@@ -33,17 +33,17 @@
 
   "home": {
     "intro_title": "NST COIL CENTER (THAILAND) LTD.",
-    "intro_subtitle": "Manufacturer.....",
+    "intro_subtitle": "Operating as a manufacturing plant specializing in cutting steel and metal sheets to custom designs and dimensions. We roll, form, and assemble steel and metals into a comprehensive range of products, including flat sheets, stamped parts, frames, pipes, rods, wires, components, and all types of finished metal goods.",
     "intro_goal": "Our Goal",
-    "intro_goal_desc": "\"Creating a bright future with protection\"",
+    "intro_goal_desc": "\"Committed to enhancing product quality and human potential, while prioritizing environmental care and sustainable resource utilization.\"",
     "services_title": "Our Services",
     "awards_title": "Awards & Certifications",
     "awards_desc": "Our Pride",
-    "clients_title": "Our Clients",
-    "service_1": "Coil Slitting Service",
-    "service_1_desc": "High quality steel slitting with modern machinery.",
-    "service_2": "Delivery Service",
-    "service_2_desc": "Fast and on-time delivery nationwide.",
+
+    "service_1": "Metal Cutting Services",
+    "service_1_desc": "High-quality metal cutting services utilizing state-of-the-art machinery. We accommodate cutting for steel, stainless steel, aluminum, and all types of metals, ensuring precision, speed, and industry-standard compliance.",
+    "service_2": "Material Trading & Procurement",
+    "service_2_desc": "We support a wide variety of materials, including general steel, GA, GI, Hot Roll (HR), Cold Roll (CR), special steel, PCM, stainless steel, aluminum, and PGG. We provide high-quality material sourcing and selection services to meet the demands of all industrial applications.",
     "news_all": "View All News"
   },
   "history": {
@@ -97,23 +97,18 @@
     "exec_5_date": "August 28, 1997",
     "exec_5_policy": "Building sustainable relationships with customers and partners through honesty and responsibility.",
     "culture_title": "Corporate Culture",
-    "culture_desc": "We believe in teamwork, prioritizing safety, integrity, and continuous improvement to create high-quality products and deliver the best service to our customers.",
+    "culture_desc": "We are committed to teamwork, safety, and integrity. Through continuous improvement, we strive to manufacture high-quality products, ensure on-time delivery, and achieve the highest level of customer satisfaction.",
     "equip_title": "Equipment"
   },
   "quality_policy": {
-    "title": "Quality & Environment Policy",
+    "title": "Company Policy",
     "subtitle": "Commitment to Excellence and Sustainable Growth",
-    "quality_heading": "Quality Policy (ISO 9001)",
-    "quality_desc": "NST COIL CENTER (THAILAND) LTD. is committed to producing and delivering high-quality steel products that meet international standards to achieve maximum customer satisfaction through continuous improvement.",
-    "q_list_1": "Strictly control product quality at every step.",
-    "q_list_2": "Develop personnel skills to increase work efficiency.",
-    "q_list_3": "Deliver products on time.",
-    "env_heading": "Environment Policy (ISO 14001)",
-    "env_desc": "We are aware of the environmental impact of our operations and are committed to conducting business alongside environmental preservation for a sustainable future.",
-    "e_list_1": "Comply with environmental laws and regulations.",
-    "e_list_2": "Reduce waste and optimize resource utilization.",
-    "e_list_3": "Prevent pollution and promote continuous environmental improvement."
+    "read_more": "Read Full Policy",
+    "download_pdf": "Download PDF Document",
+    "back": "Back to List",
+    "no_data": "No policies available at this time."
   },
+
   "privacy_policy": {
     "title": "Personal Data Protection Policy",
     "subtitle": "NST COIL CENTER (THAILAND) LTD.",

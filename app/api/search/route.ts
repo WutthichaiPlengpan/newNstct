@@ -3,19 +3,19 @@ import { connectDB } from "@/app/lib/db";
 import sql from "mssql";
 
 export async function GET(request: Request) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const q = searchParams.get("q");
+  try {
+    const { searchParams } = new URL(request.url);
+    const q = searchParams.get("q");
 
-        if (!q || q.trim() === "") {
-            return NextResponse.json({ success: true, results: [] });
-        }
+    if (!q || q.trim() === "") {
+      return NextResponse.json({ success: true, results: [] });
+    }
 
-        const pool = await connectDB();
-        
-        // 💡 เราจะใช้ UNION ALL เพื่อดึงข้อมูลจากหลายๆ ตารางมารวมกัน
-        // ใช้ LIKE @keyword เพื่อป้องกัน SQL Injection
-        const query = `
+    const pool = await connectDB();
+
+    // 💡 เราจะใช้ UNION ALL เพื่อดึงข้อมูลจากหลายๆ ตารางมารวมกัน
+    // ใช้ LIKE @keyword เพื่อป้องกัน SQL Injection
+    const query = `
             -- 1. ค้นหาใน ข่าวสาร (News)
             SELECT 
                 'news' as Type, 
@@ -53,18 +53,34 @@ export async function GET(request: Request) {
             FROM tb_hr_Jobs 
             WHERE IsActive = 1 AND (Title LIKE @keyword OR Requirements LIKE @keyword)
             
-            ORDER BY Date DESC
+            -- 4. Policy
+            UNION ALL
+            SELECT 
+                'policy' AS Type, 
+                PolicyID AS ID, 
+                Title, 
+                Summary + ' ' + Content AS Description, 
+                NULL AS ImageUrl,
+                CreatedAt AS Date
+            FROM tb_hr_Company_Policies
+            WHERE (Title LIKE @keyword OR Content LIKE @keyword)
+
+          ORDER BY Date DESC
         `;
 
-        // 💡 ใส่ % ครอบคำค้นหา และบังคับเป็น NVarChar เพื่อรองรับ ไทย/ญี่ปุ่น
-        const searchKeyword = `%${q}%`;
-        const result = await pool.request()
-            .input('keyword', sql.NVarChar, searchKeyword)
-            .query(query);
+    // 💡 ใส่ % ครอบคำค้นหา และบังคับเป็น NVarChar เพื่อรองรับ ไทย/ญี่ปุ่น
+    const searchKeyword = `%${q}%`;
+    const result = await pool
+      .request()
+      .input("keyword", searchKeyword)
+      .query(query);
 
-        return NextResponse.json({ success: true, results: result.recordset });
-    } catch (error) {
-        console.error("Search API Error:", error);
-        return NextResponse.json({ success: false, message: "เกิดข้อผิดพลาดในการค้นหา" }, { status: 500 });
-    }
+    return NextResponse.json({ success: true, results: result.recordset });
+  } catch (error) {
+    console.error("Search API Error:", error);
+    return NextResponse.json(
+      { success: false, message: "เกิดข้อผิดพลาดในการค้นหา" },
+      { status: 500 },
+    );
+  }
 }

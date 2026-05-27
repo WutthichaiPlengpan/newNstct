@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     // สร้างรหัส 8 หลัก
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
 
-    const dirPath = path.join(process.cwd(), "public/uploads/shared");
+    const dirPath = path.join(process.cwd(), "private_uploads");
     await mkdir(dirPath, { recursive: true });
 
     for (const file of files) {

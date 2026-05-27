@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     query += ` ORDER BY a.ActivityDate DESC`;
 
     const requestSql = pool.request();
-    if (category) requestSql.input("Category", sql.NVarChar, category);
+    if (category) requestSql.input("Category", category);
 
     const result = await requestSql.query(query);
     return NextResponse.json({ success: true, data: result.recordset });
@@ -33,10 +33,10 @@ export async function POST(request: Request) {
     const pool = await connectDB();
     await pool
       .request()
-      .input("Title", sql.NVarChar, title)
-      .input("Category", sql.NVarChar, category)
-      .input("ActivityDate", sql.Date, date)
-      .input("Description", sql.NVarChar, description || "")
+      .input("Title", title)
+      .input("Category", category)
+      .input("ActivityDate", date)
+      .input("Description", description || "")
       .query(
         `INSERT INTO tb_hr_Activities (Title, Category, ActivityDate, Description) VALUES (@Title, @Category, @ActivityDate, @Description)`,
       );
@@ -55,8 +55,8 @@ export async function PUT(request: Request) {
     if (body.action === "setCover") {
       await pool
         .request()
-        .input("ActivityID", sql.Int, body.id)
-        .input("CoverImage", sql.NVarChar, body.coverImage)
+        .input("ActivityID", body.id)
+        .input("CoverImage", body.coverImage)
         .query(
           `UPDATE tb_hr_Activities SET CoverImage = @CoverImage WHERE ActivityID = @ActivityID`,
         );
@@ -69,11 +69,11 @@ export async function PUT(request: Request) {
     // กรณีอัปเดตข้อมูลกิจกรรม
     await pool
       .request()
-      .input("ActivityID", sql.Int, body.id)
-      .input("Title", sql.NVarChar, body.title)
-      .input("Category", sql.NVarChar, body.category)
-      .input("ActivityDate", sql.Date, body.date)
-      .input("Description", sql.NVarChar, body.description || "").query(`
+      .input("ActivityID", body.id)
+      .input("Title", body.title)
+      .input("Category", body.category)
+      .input("ActivityDate", body.date)
+      .input("Description", body.description || "").query(`
                 UPDATE tb_hr_Activities 
                 SET Title = @Title, Category = @Category, ActivityDate = @ActivityDate, Description = @Description
                 WHERE ActivityID = @ActivityID
@@ -90,7 +90,7 @@ export async function DELETE(request: Request) {
     const pool = await connectDB();
     await pool
       .request()
-      .input("ActivityID", sql.Int, id)
+      .input("ActivityID", id)
       .query(
         `UPDATE tb_hr_Activities SET IsActive = 0 WHERE ActivityID = @ActivityID`,
       );

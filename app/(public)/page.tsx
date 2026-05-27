@@ -24,6 +24,7 @@ interface AlbumImage {
 
 interface SelectedAlbum {
   title: string;
+  discription: string;
   images: AlbumImage[];
 }
 
@@ -35,6 +36,12 @@ export default function Home() {
   const [selectedAlbum, setSelectedAlbum] = useState<SelectedAlbum | null>(
     null,
   );
+
+  const serviceImages: string[] = [
+    "/services/Image_cawbo6ca.png", // รูปสำหรับบริการที่ 1
+    "/products/SteelSheet.png", // รูปสำหรับบริการที่ 2
+  ];
+
   const slides: string[] = [
     "/slides/slide-1.png",
     "/slides/slide-2.png",
@@ -48,75 +55,75 @@ export default function Home() {
   const AWARDS = [
     {
       id: 1,
-      image: "/uploads/awards/image_1779268318219532.png",
-      title: "Best Coil Center 2024",
-      discription: "ได้รับรางวัล Best Coil Center ประจำปี 2024 ",
+      image: "/awards/image_1779268318219532.png",
+      title: "SUPPLIER QUALITY AWARD 2024",
+      discription: "ได้รับรางวัล Best Supplier Quality Award ประจำปี 2024 จาก Daikin",
     },
     {
       id: 2,
-      image: "/uploads/awards/image_1779268600634994.png",
-      title: "ISO 9001 Certification",
-      discription: "ได้รับการรับรองมาตรฐาน ISO 9001 ",
+      image: "/awards/image_1779268600634994.png",
+      title: "BEST SUPPLIER AWARD 2020",
+      discription: "ได้รับรางวัล Best Supplier Award ประจำปี 2020 จาก Daikin",
     },
     {
       id: 3,
-      image: "/uploads/awards/image_1779269015861755.png",
-      title: "Quality Standard Award",
-      discription: "ได้รับรางวัล Quality Standard Award ",
+      image: "/awards/image_1779269276644598.png",
+      title: "GOOD SUPPLIER AWARD 2016",
+      discription: "ได้รับรางวัล Good Supplier Award ประจำปี 2016 จาก Daikin",
     },
     {
       id: 4,
-      image: "/uploads/awards/image_1779269276644598.png",
-      title: "Customer Satisfaction",
-      discription: "ได้รับรางวัล Customer Satisfaction ",
+      image: "/awards/image_1779269015861755.png",
+      title: "DAIKIN QUALITY AWARD 2012",
+      discription: "ได้รับรางวัล Quality Award 2012 Best For SB Coil Center (Thailand) LTD.,",
     },
     {
       id: 5,
-      image: "/uploads/awards/image_1779268902926177.png",
-      title: "BOI Excellence Award",
-      discription: "ได้รับรางวัล BOI Excellence Award ",
+      image: "/awards/image_1779268902926177.png",
+      title: "BEST SUPPLIER AWARD 2013",
+      discription: "ได้รับรางวัล Best Supplier Award ประจำปี 2013 จาก Exedy",
     },
     {
       id: 6,
-      image: "/uploads/awards/image_1779269470809727.png",
-      title: "Green Industry Award",
-      discription: "ได้รับรางวัล Green Industry Award ",
+      image: "/awards/image_1779269470809727.png",
+      title: "BEST SUPPLIER AWARD 2012",
+      discription: "ด้รับรางวัล Best Supplier Award ประจำปี 2012 จาก Exedy ",
     },
     {
       id: 7,
-      image: "/uploads/awards/image_1779269139288932.png",
-      title: "Innovation Excellence",
-      discription: "ได้รับรางวัล Innovation Excellence",
+      image: "/awards/image_1779269139288932.png",
+      title: "BAST DELIVERY AWARD 2010",
+      discription: "ได้รับรางวัล Bast Delivery Award 2010 (100% Time) จาก Hirata Engineering",
     },
     {
       id: 8,
-      image: "/uploads/awards/image_1779269470809725.png",
-      title: "Green Industry Award",
-      discription: "ได้รับรางวัล Green Industry Award ",
+      image: "/awards/image_1779269470809725.png",
+      title: "BEST QUALITY AWARD 2009",
+      discription: "ได้รับรางวัล  Bast Quality Award 2009 (Material) จาก Hirata Engineering ",
     },
     {
       id: 9,
-      image: "/uploads/awards/image_1779269470809729.png",
-      title: "Green Industry Award",
-      discription: "ได้รับรางวัล Green Industry Award ",
+      image: "/awards/image_1779269470809729.png",
+      title: "BEST QCD COOPERATION 2013",
+      discription: "ได้รับรางวัล best QCD Cooperation 2013 จาก Mitsui",
     },
     {
       id: 10,
-      image: "/uploads/awards/image_1779269470809726.png",
-      title: "Green Industry Award",
-      discription: "ได้รับรางวัล Green Industry Award ",
+      image: "/awards/image_1779269470809726.png",
+      title: "เหรียญเงินจากกระทรวงแรงงาน 2567 (2024)",
+      discription: "ได้รับรางวัล เหรียญเงินจากกระทรวงแรงงาน เกี่ยวกับการรณรงค์ลดอุบัติเหตุจากการทำงานเป็นศูนย์ ปีพ.ศ.2567",
     },
     {
       id: 11,
-      image: "/uploads/awards/image_1779269470809728.png",
-      title: "Green Industry Award",
-      discription: "ได้รับรางวัล Green Industry Award ",
+      image: "/awards/image_1779269470809728.png",
+      title: "เหรียญทองแดงจากกระทรวงแรงงาน 2565 (2022)",
+      discription: "ได้รับรางวัล เหรียญทองแดงจากกระทรวงแรงงาน เกี่ยวกับการรณรงค์ลดอุบัติเหตุจากการทำงานเป็นศูนย์ ปีพ.ศ.2565",
     },
     {
       id: 12,
-      image: "/uploads/awards/image_1779268441344042.png",
-      title: "Safety Excellence Award",
-      discription: "ได้รับรางวัล Safety Excellence Award ",
+      image: "/awards/image_1779268441344042.png",
+      title: "รางวัลผลการประเมินโรงงาน",
+      discription: "ได้รับรางวัล จากจังหวัดชลบุรีเกี่ยวกับผลการผ่านการประเมินมาตราฐานโรงานสีขาว ",
     },
   ];
   useEffect(() => {
@@ -201,7 +208,7 @@ export default function Home() {
             </div>
           </div>
           <div className="bg-gray-100 p-8 md:p-12 rounded-lg h-full flex flex-col justify-center shadow-sm">
-            <h2 className="text-3xl font-bold text-blue-900 mb-2">
+            <h2 className="text-2xl font-bold text-blue-900 mb-2">
               {t("home.intro_title")}
             </h2>
             <p className="text-gray-600 mb-8">{t("home.intro_subtitle")}</p>
@@ -219,16 +226,22 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center text-blue-900 mb-12 uppercase">
             {t("home.services_title")}
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[1, 2, 3, 4].map((item) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 ">
+            {/* 💡 เพิ่มพารามิเตอร์ index เพื่อนำไปใช้ดึงรูปภาพจาก Array */}
+            {[1, 2].map((item, index) => (
               <div
                 key={item}
                 className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 group cursor-pointer border border-gray-100"
               >
                 <div className="aspect-video relative bg-gray-200 overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400 group-hover:scale-110 transition-transform duration-500">
-                    รูปบริการ {item}
-                  </div>
+                 
+                  <Image
+                    src={serviceImages[index]}
+                    alt={`Service ${item}`}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
                 </div>
                 <div className="p-6 text-center">
                   <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
@@ -268,6 +281,7 @@ export default function Home() {
                   onClick={() =>
                     setSelectedAlbum({
                       title: award.title,
+                      discription: award.discription,
                       images: [{ ImageUrl: award.image }],
                     })
                   }
@@ -330,13 +344,15 @@ export default function Home() {
                 <Image
                   src={selectedAlbum.images[0].ImageUrl}
                   alt={selectedAlbum.title}
+                  
                   fill
-                  className="object-contain" 
+                  className="object-contain"
                   sizes="100vw"
                 />
               </div>
               <div className="p-4 text-center font-bold text-lg">
                 {selectedAlbum.title}
+                <p className="text-base font-light">{selectedAlbum.discription}</p>
               </div>
             </div>
           </div>

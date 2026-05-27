@@ -19,7 +19,7 @@ export async function GET(request: Request) {
         `;
 
         const result = await pool.request()
-            .input("year", sql.Int, targetYear)
+            .input("year",  targetYear)
             .query(query);
 
         const schedules = result.recordset;

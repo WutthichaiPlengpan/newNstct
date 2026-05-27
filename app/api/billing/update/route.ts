@@ -42,11 +42,11 @@ export async function POST(request: Request) {
 
                 // อัปเดตฐานข้อมูล
                 await pool.request()
-                    .input("WHT", sql.Decimal(5, 2), inv.whtPercent)
-                    .input("Payment", sql.Decimal(18, 2), netPayment)
-                    .input("WHTData", sql.Decimal(18, 2), whtAmount)
-                    .input("InvNo", sql.VarChar, inv.invNo)
-                    .input("Supplier", sql.VarChar, supplierCode)
+                    .input("WHT", inv.whtPercent)
+                    .input("Payment",  netPayment)
+                    .input("WHTData", whtAmount)
+                    .input("InvNo",  inv.invNo)
+                    .input("Supplier",  supplierCode)
                     .query(`
                         UPDATE Tb_BillingSup 
                         SET WithHolding = @WHT, Payment = @Payment, Status = 'Y', WithHoldData = @WHTData 
@@ -88,8 +88,8 @@ export async function POST(request: Request) {
             for (const inv of invoices) {
                 // อัปเดตเคลียร์ค่าทั้งหมดกลับเป็น N
                 await pool.request()
-                    .input("InvNo", sql.VarChar, inv.invNo)
-                    .input("Supplier", sql.VarChar, supplierCode)
+                    .input("InvNo",  inv.invNo)
+                    .input("Supplier",  supplierCode)
                     .query(`
                         UPDATE Tb_BillingSup 
                         SET WithHolding = NULL, WithHoldData = 0, Payment = NULL, Status = 'N' 

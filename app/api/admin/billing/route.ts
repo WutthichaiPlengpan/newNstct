@@ -27,10 +27,10 @@ export async function POST(request: Request) {
 
         const pool = await connectAccountDB();
         await pool.request()
-            .input('SchYear', sql.Int, schYear)
-            .input('SchMonth', sql.NVarChar, schMonth)
-            .input('StartDate', sql.Date, startDate)
-            .input('EndDate', sql.Date, endDate)
+            .input('SchYear',  schYear)
+            .input('SchMonth', schMonth)
+            .input('StartDate',  startDate)
+            .input('EndDate',  endDate)
             .query(`
                 INSERT INTO tb_BillingSchedules (SchYear, SchMonth, StartDate, EndDate, IsActive) 
                 VALUES (@SchYear, @SchMonth, @StartDate, @EndDate, 1)
@@ -48,7 +48,7 @@ export async function PUT(request: Request) {
         const { schId } = await request.json();
         const pool = await connectAccountDB();
         await pool.request()
-            .input('SchID', sql.Int, schId)
+            .input('SchID',  schId)
             .query(`
                 UPDATE tb_BillingSchedules 
                 SET IsActive = 0 

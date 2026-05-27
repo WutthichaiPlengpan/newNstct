@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     // Parameterized Query (ด่านที่ 2 ป้องกัน SQLi)
     const result = await pool
       .request()
-      .input("username", sql.NVarChar, username)
+      .input("username", username)
       .query(query);
 
     // เช็คว่าเจอ User หรือไม่
